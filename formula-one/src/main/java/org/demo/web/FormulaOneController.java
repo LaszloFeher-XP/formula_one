@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("api/team")
+@RequestMapping("api/f1")
 public class FormulaOneController {
 
     FormulaOneService formulaOneService;
