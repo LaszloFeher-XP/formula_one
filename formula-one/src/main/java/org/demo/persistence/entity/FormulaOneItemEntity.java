@@ -2,12 +2,10 @@ package org.demo.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.demo.model.EntryFeeStatus;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data

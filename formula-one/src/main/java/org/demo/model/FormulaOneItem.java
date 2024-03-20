@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -18,4 +18,17 @@ public class FormulaOneItem {
     String foundationYear;
     Integer championships;
     EntryFeeStatus entryFeeStatus;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FormulaOneItem that = (FormulaOneItem) o;
+        return Objects.equals(name.toLowerCase(), that.name.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }
