@@ -1,0 +1,44 @@
+<header>
+    <p-button label="vissza" icon="pi pi-angle-left" (click)="back()"></p-button>
+</header>
+
+  <p-card header="Új csapat hozzáadása "[style]="{ width: '45rem'}">
+
+
+    <form [formGroup]="formGroup">
+        
+        <div class="input-field">
+            <div>Név</div>
+            <div>
+                <input type="text" pInputText formControlName="name"/>
+            </div>
+        </div>
+        <div class="input-field">
+            <div>Alapítás éve</div>
+            <div>
+                <p-inputNumber formControlName="foundationYear" [showButtons]="true" inputId="minmax-buttons" [min]="1900" [max]="2024"> </p-inputNumber>
+            </div>
+        </div>
+        <div class="input-field">
+            <div>Megnyert világbajnokságok száma</div>
+            <div>
+                <p-inputNumber formControlName="championships" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100"> </p-inputNumber>
+            </div>
+        </div>
+        <div class="input-field">
+            <div> Befizette a nevezési díjat</div>
+            <div>
+                <p-inputSwitch formControlName="entryFeeStatus"></p-inputSwitch>
+            </div>
+        </div>
+
+    </form>
+
+    <ng-template pTemplate="footer" >
+        <p-button label="Cancel" icon="pi pi-times" styleClass="p-button-secondary"></p-button>
+        <p-button (click)="save()" label="Save" icon="pi pi-check" [style]="{ 'margin-left': '.5em' }" [disabled]="!formGroup.valid"></p-button>
+    </ng-template>
+
+    <p-toast position="bottom-right"></p-toast>           
+
+</p-card>

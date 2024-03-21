@@ -1,0 +1,26 @@
+
+header{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.p-card-body {
+    max-width: 30rem;
+}
+
+.input-field {    
+    min-height: 4rem;
+    display: flex;
+    flex-basis: auto;
+    align-items: center;
+
+    div:first-child {
+        width: 22rem;
+    }
+}
+
+.p-card-footer{
+    display: flex;
+    justify-content: flex-end;
+}

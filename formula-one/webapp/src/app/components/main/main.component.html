@@ -1,10 +1,17 @@
+
+<header>
+  <p-button label="Új csapat hozzáadása" (click)="create()"></p-button>
+</header>
+  
+
 <p-table [value]="teams" styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
         <tr>
             <th>Név</th>
             <th>Alapítás éve</th>
-            <th>Megnyert világbajnokságok száma</th>
-            <th>Befizette a nevezési díjat</th>
+            <th>Megnyert<br/>világbajnokságok száma</th>
+            <th>Befizette<br/> a nevezési díjat</th>
+            <th>&nbsp;</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-item>
@@ -13,6 +20,10 @@
             <td>{{ item.foundationYear }}</td>            
             <td>{{ item.championships }}</td>            
             <td>@if(isPaid(item)){<i class="pi pi-check" style="color: green"></i>}</td>                          
+            <td>
+                <p-button (click)="updateTeam(item)" icon="pi pi-pencil" [rounded]="true" [text]="true" pTooltip="Módosítás"></p-button>
+                <p-button (click)="deleteTeam(item)" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger"  pTooltip="Törlés"></p-button>
+            </td>                          
         </tr>
     </ng-template>
 </p-table>

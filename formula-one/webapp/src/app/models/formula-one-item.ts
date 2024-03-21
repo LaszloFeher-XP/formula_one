@@ -1,9 +1,9 @@
-import { EntityFeeStatus } from './entity-fee-status';
+import { EntryFeeStatus } from './entry-fee-status';
 
 export interface FormulaOneItem{
-  id:string;
+  id?:string;
   name:string;
   foundationYear:string;
   championships:number;
-  entryFeeStatus: EntityFeeStatus;  
+  entryFeeStatus: EntryFeeStatus;  
 }

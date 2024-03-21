@@ -12,6 +12,7 @@ import { MainComponent } from './components/main/main.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
+  
 export class AppComponent {
   title = "webapp";
 }
