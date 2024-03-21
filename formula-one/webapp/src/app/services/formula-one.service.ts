@@ -20,16 +20,16 @@ export class FormulaOneService {
     return this.http.get<FormulaOneItem[]>(this.API, { headers: this.HEADERS });
   }
 
-  updateTeam(item: FormulaOneItem): Observable<FormulaOneItem> {
-    return this.http.post<FormulaOneItem>(`${this.API}/${item.id}`, item);
+  addTeam(item: FormulaOneItem): Observable<FormulaOneItem>{
+    return this.http.post<FormulaOneItem>(this.API, item);
+  }
+
+  updateTeam(item: FormulaOneItem): Observable<FormulaOneItem>{
+    return this.http.put<FormulaOneItem>(this.API, item);
   }
 
   async deleteTeam(id:string): Promise<void>{    
     return lastValueFrom(this.http.delete<void>(`${this.API}/${id}`));
-  }
-
-  addTeam(item: FormulaOneItem): Observable<FormulaOneItem>{
-    return this.http.post<FormulaOneItem>(this.API, item);
   }
 
 }

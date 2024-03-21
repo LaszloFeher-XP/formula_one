@@ -3,7 +3,10 @@
 </header>
 
   <p-card header="Új csapat hozzáadása "[style]="{ width: '45rem'}">
-
+    <ng-template pTemplate="header">
+        <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" />
+    </ng-template>
+  
 
     <form [formGroup]="formGroup">
         
@@ -16,7 +19,7 @@
         <div class="input-field">
             <div>Alapítás éve</div>
             <div>
-                <p-inputNumber formControlName="foundationYear" [showButtons]="true" inputId="minmax-buttons" [min]="1900" [max]="2024"> </p-inputNumber>
+                <p-inputNumber formControlName="foundationYear" [showButtons]="true" inputId="minmax-buttons" [min]="START_YEAR" [max]="END_YEAR"> </p-inputNumber>
             </div>
         </div>
         <div class="input-field">
@@ -35,8 +38,8 @@
     </form>
 
     <ng-template pTemplate="footer" >
-        <p-button label="Cancel" icon="pi pi-times" styleClass="p-button-secondary"></p-button>
-        <p-button (click)="save()" label="Save" icon="pi pi-check" [style]="{ 'margin-left': '.5em' }" [disabled]="!formGroup.valid"></p-button>
+        <p-button (click)="back()" label="Cancel" icon="pi pi-times" styleClass="p-button-secondary"></p-button>
+        <p-button (click)="save()" label="{{saveLabel}}" icon="pi pi-check" [style]="{ 'margin-left': '.5em' }" [disabled]="!formGroup.valid"></p-button>
     </ng-template>
 
     <p-toast position="bottom-right"></p-toast>           

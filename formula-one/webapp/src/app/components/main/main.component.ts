@@ -12,6 +12,9 @@ import { FormulaOneService } from '../../services/formula-one.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 
+import { Store, StoreModule } from '@ngrx/store';
+import { formulaOneItemReducer } from '../store/formula-one-reducers';
+import { addFormulaOneItem } from '../store/formula-one-actions';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -32,6 +35,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   constructor(
     private formulaOneService: FormulaOneService,
+    private store: Store,
     private router: Router
   ) {}
 
@@ -52,8 +56,8 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   updateTeam(item: FormulaOneItem): void{
-    console.log(item);
-    this.formulaOneService.updateTeam(item);
+    this.store.dispatch(addFormulaOneItem(item));
+    this.router.navigateByUrl('update-team');
   }
 
   async deleteTeam(item: FormulaOneItem): Promise<void>{
