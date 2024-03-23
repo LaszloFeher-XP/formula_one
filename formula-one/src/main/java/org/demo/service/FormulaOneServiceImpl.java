@@ -1,10 +1,10 @@
 package org.demo.service;
 
-import jakarta.ws.rs.NotFoundException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.demo.error.InvalidTeamException;
+import org.demo.error.TeamNotFoundException;
 import org.demo.model.FormulaOneItem;
 import org.demo.persistence.entity.FormulaOneItemEntity;
 import org.demo.persistence.repository.FormulaOneRepository;
@@ -44,7 +44,7 @@ public class FormulaOneServiceImpl implements FormulaOneService {
     @Override
     public FormulaOneItem updateTeam(FormulaOneItem formulaOneItem) {
         if (!repository.existsById(formulaOneItem.getId())) {
-            throw new InvalidTeamException(String.format("Team cannot be found with this ID: %s", formulaOneItem.getId()));
+            throw new TeamNotFoundException(String.format("Team cannot be found with this ID: %s", formulaOneItem.getId()));
         }
         FormulaOneItemEntity formulaOneItemEntity = repository.getReferenceById(formulaOneItem.getId());
         formulaOneItemEntity.setName(formulaOneItem.getName());
@@ -82,4 +82,5 @@ public class FormulaOneServiceImpl implements FormulaOneService {
                 .entryFeeStatus(entity.getEntryFeeStatus())
                 .build();
     }
+
 }

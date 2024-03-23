@@ -1,5 +1,6 @@
 package org.demo.persistence.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,4 +31,8 @@ public class FormulaOneItemEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     EntryFeeStatus entryFeeStatus;
+
+    public FormulaOneItemEntity apply(FormulaOneItemEntity formulaOneItemEntity) {
+        return formulaOneItemEntity;
+    }
 }
