@@ -1,8 +1,12 @@
 <header>
-    <p-button label="vissza" icon="pi pi-angle-left" (click)="back()"></p-button>
-</header>
+    <p-button label="back" icon="pi pi-angle-left" (click)="back()"></p-button>
+  </header>
+  
+<div class="content">
 
-  <p-card header="Új csapat hozzáadása "[style]="{ width: '45rem'}">
+
+  <p-card header="Add New Team" [style]="{ width: '45rem'}">
+    
     <ng-template pTemplate="header">
         <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" />
     </ng-template>
@@ -11,25 +15,25 @@
     <form [formGroup]="formGroup">
         
         <div class="input-field">
-            <div>Név</div>
+            <div>Name</div>
             <div>
                 <input type="text" pInputText formControlName="name"/>
             </div>
         </div>
         <div class="input-field">
-            <div>Alapítás éve</div>
+            <div>Foundation Year</div>
             <div>
                 <p-inputNumber formControlName="foundationYear" [showButtons]="true" inputId="minmax-buttons" [min]="START_YEAR" [max]="END_YEAR"> </p-inputNumber>
             </div>
         </div>
         <div class="input-field">
-            <div>Megnyert világbajnokságok száma</div>
+            <div>Number of Championships</div>
             <div>
                 <p-inputNumber formControlName="championships" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100"> </p-inputNumber>
             </div>
         </div>
         <div class="input-field">
-            <div> Befizette a nevezési díjat</div>
+            <div>Entry Fee Paid</div>
             <div>
                 <p-inputSwitch formControlName="entryFeeStatus"></p-inputSwitch>
             </div>
@@ -39,9 +43,11 @@
 
     <ng-template pTemplate="footer" >
         <p-button (click)="back()" label="Cancel" icon="pi pi-times" styleClass="p-button-secondary"></p-button>
-        <p-button (click)="save()" label="{{saveLabel}}" icon="pi pi-check" [style]="{ 'margin-left': '.5em' }" [disabled]="!formGroup.valid"></p-button>
+        <p-button (click)="save()" label="{{saveLabel}}" icon="pi pi-check" [style]="{ 'margin-left': '.5em' }" [disabled]="buttonDisabled"></p-button>
     </ng-template>
 
     <p-toast position="bottom-right"></p-toast>           
 
-</p-card>
+  </p-card>
+
+</div>

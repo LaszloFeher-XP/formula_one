@@ -1,3 +1,8 @@
+.content {
+    margin: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+}
 
 header{
     display: flex;
@@ -7,6 +12,10 @@ header{
 
 .p-card-body {
     max-width: 30rem;
+
+    img{
+        max-height: 5rem;
+    }
 }
 
 .input-field {    

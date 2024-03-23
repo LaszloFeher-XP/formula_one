@@ -9,7 +9,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+
 import { FormulaOneService } from '../../services/formula-one.service';
 import { FormulaOneItem } from '../../models/formula-one-item';
 import { EntryFeeStatus } from '../../models/entry-fee-status';
@@ -17,7 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ErrorModel } from '../../models/error-model';
 import { MessageService } from 'primeng/api';
 import { Store } from '@ngrx/store';
-import { removeFormulaOneItem } from '../store/formula-one-actions';
+import { removeFormulaOneItem } from '../../store/formula-one-actions';
 
 @Component({
   selector: 'app-add-team',
@@ -51,7 +52,7 @@ import { removeFormulaOneItem } from '../store/formula-one-actions';
 export class AddTeamComponent implements  OnDestroy{
   private destroy: Subject<void> = new Subject<void>();
   readonly START_YEAR: number = 1950;
-  readonly END_YEAR:any = 1950;
+  readonly END_YEAR: number = 1950;
   formGroup: FormGroup;
   storeItem = this.store.select('formulaOneItem');
   editMode: boolean = false;
@@ -65,16 +66,16 @@ export class AddTeamComponent implements  OnDestroy{
     private router: Router,
 
   ) {
-    this.END_YEAR = this.datePipe.transform(new Date(), 'yyyy');
+    this.END_YEAR = +(this.datePipe.transform(new Date(), 'yyyy')!);
     this.formGroup = new FormGroup({
       name: new FormControl('', Validators.required),
-      foundationYear: new FormControl('', [Validators.required, Validators.min(this.START_YEAR), Validators.max(2024)]),
-      championships: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+      foundationYear: new FormControl(1950, [Validators.required, Validators.min(this.START_YEAR), Validators.max(2024)]),
+      championships: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(100)]),
       entryFeeStatus: new FormControl(false, Validators.required),
-    })
+    })    
     this.storeItem.pipe(takeUntil(this.destroy)).subscribe((value: FormulaOneItem) => {
       this.checkUpdateMode(value);
-      if (value) {
+      if (value && value.id) {
         this.fillExistingDataIntoForm(value);
         this.editMode = true;
       }
@@ -120,10 +121,7 @@ export class AddTeamComponent implements  OnDestroy{
       .subscribe({        
         next: (value: FormulaOneItem) => {
           this.checkAdded(value);
-          this.formGroup.reset();
-          setTimeout(() => {
-            this.router.navigateByUrl('/');
-          }, 1000);   
+          this.finalize();
         },
         error: (err: ErrorModel) => {
           this.showError(err);
@@ -138,9 +136,7 @@ export class AddTeamComponent implements  OnDestroy{
       .subscribe({        
         next: (value: FormulaOneItem) => {
           this.checkUpdated(value);
-          setTimeout(() => {
-            this.router.navigateByUrl('/');
-          }, 1000);   
+          this.finalize();
         },
         error: (err: ErrorModel) => {
           this.showError(err);
@@ -152,29 +148,44 @@ export class AddTeamComponent implements  OnDestroy{
     return this.editMode ? 'Update' : 'Save';
   }
 
-  
+  get buttonDisabled(): boolean{
+    return this.editMode ? this.formGroup.pristine : !this.formGroup.valid;
+  }
+
   ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.complete();
   }
   
   private showError(err: ErrorModel): void{
+    if (err?.status && err.status == 401) {
+      this.messageService.add({ severity: 'error', summary: 'Session has expired', detail: `Please logout and login again.` });
+      return;
+    }
     this.messageService.add({
       severity: 'error',
-      summary: 'Sikertelen feltöltés',
+      summary: 'Unsuccessful action',
       detail: err.error?.message ? err.error.message : err.message
     });
   }
 
   private checkAdded(value: FormulaOneItem): void{
     if (value && value.id) {
-      this.messageService.add({ severity: 'success', summary: 'Sikeres feltöltés', detail: `${value.name} csapat hozzáadva.` });
+      this.messageService.add({ severity: 'success', summary: 'Update successful', detail: `${value.name} has been created.` });
     }
   }
 
   private checkUpdated(value: FormulaOneItem): void{
     if (value && value.id) {
-      this.messageService.add({ severity: 'success', summary: 'Sikeres módosítás', detail: `${value.name} csapat módosítva.` });
+      this.messageService.add({ severity: 'success', summary: 'Update successful', detail: `${value.name} has been modified.` });
     }
+  }
+
+  private finalize(): void{
+    setTimeout(() => {      
+      this.formGroup.reset();
+      this.store.dispatch(removeFormulaOneItem());
+      this.router.navigateByUrl('/');
+    }, 1000);   
   }
 }

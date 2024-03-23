@@ -1,7 +1,9 @@
-import { HttpClient, HttpHeaders, HttpParamsOptions } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, lastValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormulaOneItem } from '../models/formula-one-item';
+import { AuthenticationService } from './authentication.service';
+import { DeleteResponse } from '../models/delete-response';
 
 @Injectable({
   providedIn: 'root'
@@ -9,27 +11,37 @@ import { FormulaOneItem } from '../models/formula-one-item';
 export class FormulaOneService {
 
   private readonly API: string = 'http://localhost:8080/api/f1';
-  private readonly HEADERS: HttpHeaders = new HttpHeaders()
-    .set('Content-Type', 'application/json-patch+json');
 
   constructor(
-    private readonly http: HttpClient
+    private readonly authenticationService: AuthenticationService,
+    private readonly http: HttpClient,
   ) { }
 
   getTeams(): Observable<FormulaOneItem[]> {
-    return this.http.get<FormulaOneItem[]>(this.API, { headers: this.HEADERS });
+    return this.http.get<FormulaOneItem[]>(this.API);
   }
 
   addTeam(item: FormulaOneItem): Observable<FormulaOneItem>{
-    return this.http.post<FormulaOneItem>(this.API, item);
+    return this.http.post<FormulaOneItem>(`${this.API}/team`, item, {headers: this.header});
   }
 
   updateTeam(item: FormulaOneItem): Observable<FormulaOneItem>{
-    return this.http.put<FormulaOneItem>(this.API, item);
+    return this.http.put<FormulaOneItem>(`${this.API}/team`, item, {headers: this.header});
   }
 
-  async deleteTeam(id:string): Promise<void>{    
-    return lastValueFrom(this.http.delete<void>(`${this.API}/${id}`));
+  deleteTeam(id: string): Observable<DeleteResponse> {
+    return this.http.delete<DeleteResponse>(`${this.API}/team/${id}`, {headers: this.header});
   }
 
+  get header(): HttpHeaders {
+    const headers = new HttpHeaders({
+      Authorization: this.basicAuthHeaderString
+    })
+    return headers;
+  }
+
+  get basicAuthHeaderString(): string {
+    const basicAuthHeaderString = 'Basic ' + window.btoa(`${this.authenticationService.username}:${this.authenticationService.password}`);
+    return basicAuthHeaderString;
+  }
 }

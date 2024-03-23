@@ -1,3 +1,9 @@
-<h1>Formula 1 - csapatok</h1>
-
-<router-outlet />
+<header class="p-fluid">
+    <h1>Formula 1 Teams</h1>
+<div> 
+    <p-button label="{{loginLabel}}" [link]="true" (click)="toLogin()"></p-button>
+</div>
+</header>
+<div class="content">
+  <router-outlet />
+</div>

@@ -9,6 +9,6 @@ export const formulaOneItemReducer = createReducer(
         return state = props;
     }),
     on(removeFormulaOneItem, (state) => {
-        return state = {};
+        return state = {state};
     })
 )

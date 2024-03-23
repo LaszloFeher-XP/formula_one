@@ -12,9 +12,13 @@ import { FormulaOneService } from '../../services/formula-one.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { Store, StoreModule } from '@ngrx/store';
-import { formulaOneItemReducer } from '../store/formula-one-reducers';
-import { addFormulaOneItem } from '../store/formula-one-actions';
+import { Store  } from '@ngrx/store';
+import { addFormulaOneItem } from '../../store/formula-one-actions';
+import { AuthenticationService } from '../../services/authentication.service';
+import { ErrorModel } from '../../models/error-model';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -23,6 +27,7 @@ import { addFormulaOneItem } from '../store/formula-one-actions';
 
     ButtonModule,
     TableModule,
+    ToastModule,
     TooltipModule
   ],
   templateUrl: './main.component.html',
@@ -34,7 +39,9 @@ export class MainComponent implements OnInit, OnDestroy {
   teams: FormulaOneItem[] = []
 
   constructor(
+    private authenticationService: AuthenticationService,
     private formulaOneService: FormulaOneService,
+    private messageService : MessageService,
     private store: Store,
     private router: Router
   ) {}
@@ -60,13 +67,37 @@ export class MainComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('update-team');
   }
 
-  async deleteTeam(item: FormulaOneItem): Promise<void>{
-    await this.formulaOneService.deleteTeam(item.id!);    
-    this.getTeams();
+  deleteTeam(item: FormulaOneItem): void {
+    this.formulaOneService.deleteTeam(item.id!)
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+        next: () => {
+          this.getTeams();
+        },
+        error: (err: ErrorModel) => {
+          this.showError(err);
+        }
+      });
+  }
+
+  isUserLoggedIn(): boolean{
+    return this.authenticationService.isUserLoggedIn();
   }
 
   ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.complete();
+  }
+
+  private showError(err: ErrorModel): void{
+    if (err?.status && err.status == 401) {
+      this.messageService.add({ severity: 'error', summary: 'Session has expired', detail: `Please logout and login again.` });
+      return;
+    }
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Delete was unsuccessful',
+      detail: err.error?.message ? err.error.message : err.message
+    });
   }
 }
