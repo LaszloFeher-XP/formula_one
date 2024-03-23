@@ -7,7 +7,7 @@ import { Observable, map } from 'rxjs';
 })
 export class AuthenticationService {
 
-  USER_NAME_SESSION_ATTRIBUTE_NAME = 'authenticatedUser'
+  USER_NAME_SESSION = 'authenticatedUser'
   private readonly API: string = 'http://localhost:8080/api/auth';
   private _username: string='';
   private _password: string='';
@@ -35,17 +35,17 @@ export class AuthenticationService {
   }
 
   registerSuccessfulLogin(username: string): void {
-    sessionStorage.setItem(this.USER_NAME_SESSION_ATTRIBUTE_NAME, username);
+    sessionStorage.setItem(this.USER_NAME_SESSION, username);
   }
 
   logout(): void {
-    sessionStorage.removeItem(this.USER_NAME_SESSION_ATTRIBUTE_NAME);
+    sessionStorage.removeItem(this.USER_NAME_SESSION);
     this._username = '';
     this._password = '';
   }
 
   isUserLoggedIn(): boolean {
-    const user = sessionStorage.getItem(this.USER_NAME_SESSION_ATTRIBUTE_NAME);
+    const user = sessionStorage.getItem(this.USER_NAME_SESSION);
     if (user === null) {
       return false;
     }
