@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { last } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -45,19 +46,22 @@ export class LoginComponent {
     this.router.navigateByUrl('/');
   }
 
-  login() {
+  login() { 
     this.authenticationService.authenticationService(
       this.formGroup.controls['username'].value, 
       this.formGroup.controls['password'].value)
-      .subscribe(() => {        
-        this.showSuccess();
-        setTimeout(() => {      
+      .pipe(last()).subscribe({
+        next: () => {
+          this.showSuccess();
+          setTimeout(() => {      
           this.formGroup.reset();
-          this.back();
-        }, 1000);   
-    }, () => {
-      this.showInvalid();
-    });      
+            this.back();
+          }, 1000);   
+          },
+        error: () => {
+            this.showInvalid();
+          }
+      });
   }
 
   private showSuccess(): void{
@@ -67,8 +71,5 @@ export class LoginComponent {
   private showInvalid(): void{
     this.messageService.add({ severity: 'error', summary: 'Invalid Credentials.', detail: 'Please check the login data.' });
   }
-
 }
-
-
 

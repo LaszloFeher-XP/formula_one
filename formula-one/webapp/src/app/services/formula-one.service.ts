@@ -41,7 +41,7 @@ export class FormulaOneService {
   }
 
   get basicAuthHeaderString(): string {
-    const basicAuthHeaderString = 'Basic ' + window.btoa(`${this.authenticationService.username}:${this.authenticationService.password}`);
+    const basicAuthHeaderString = 'Basic ' + window.btoa(`${this.authenticationService.user.username}:${this.authenticationService.user.password}`);
     return basicAuthHeaderString;
   }
 }

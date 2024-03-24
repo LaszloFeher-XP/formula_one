@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class HttpInterceptorService implements HttpInterceptor {
+export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
     private authenticationService: AuthenticationService
@@ -14,11 +14,11 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-      if (this.authenticationService.isUserLoggedIn() && req.url.indexOf('basicauth') === -1) {
+      if (this.authenticationService.isUserLoggedIn() && req.url.indexOf('auth') === -1) {
           const authReq = req.clone({
               headers: new HttpHeaders({
                   'Content-Type': 'application/json',
-                  'Authorization': `Basic ${window.btoa(this.authenticationService.username + ":" + this.authenticationService.password)}`
+                  'Authorization': `Basic ${window.btoa(this.authenticationService.user.username + ":" + this.authenticationService.user.password)}`
               })
           });
           return next.handle(authReq);

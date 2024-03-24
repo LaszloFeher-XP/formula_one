@@ -7,7 +7,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from 'primeng/api';
 import { StoreModule } from '@ngrx/store';
 import { formulaOneItemReducer } from './store/formula-one-reducers';
-import { HttpInterceptorService } from './services/http-interceptor.service';
+import { AuthInterceptor } from './services/auth-interceptor';
+import { HttpErrorInterceptor } from './services/http-error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,8 +19,13 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(StoreModule.forRoot({ formulaOneItem: formulaOneItemReducer })),
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttpInterceptorService,
+      useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    },
   ],
 };

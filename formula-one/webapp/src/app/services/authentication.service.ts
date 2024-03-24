@@ -1,16 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
 
-  USER_NAME_SESSION = 'authenticatedUser'
+  USER_NAME_SESSION = 'authenticatedUser';
   private readonly API: string = 'http://localhost:8080/api/auth';
-  private _username: string='';
-  private _password: string='';
+  private _user: User = new User();
 
   constructor(
     private http: HttpClient
@@ -23,8 +23,8 @@ export class AuthenticationService {
     })
     return this.http.get(this.API, { headers })
       .pipe(map(() => {
-        this._username = username;
-        this._password = password;
+        this._user.username = username;
+        this._user.password = password;
         this.registerSuccessfulLogin(username);
       }));    
   }
@@ -40,8 +40,8 @@ export class AuthenticationService {
 
   logout(): void {
     sessionStorage.removeItem(this.USER_NAME_SESSION);
-    this._username = '';
-    this._password = '';
+    this._user.username = '';
+    this._user.password = '';
   }
 
   isUserLoggedIn(): boolean {
@@ -52,11 +52,11 @@ export class AuthenticationService {
     return true;
   }
 
-  get username(): string{
-    return this._username
+  get user(): User{
+    return this._user
   }
 
-  get password(): string{
-    return this._password;
+  get hasUserData(): boolean {    
+    return this._user && this.user.username !==undefined && this.user.password !==undefined;
   }
 }
