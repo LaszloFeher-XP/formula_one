@@ -1,9 +1,7 @@
 package org.demo.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -13,8 +11,8 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class FormulaOneItem {
 
-    UUID id;
     @EqualsAndHashCode.Include
+    UUID id;
     String name;
     String foundationYear;
     Integer championships;

@@ -29,9 +29,8 @@ public class WebSecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withUsername("admin")
                 .password("{noop}f1test2018")
-                .roles("USER")
+                .roles("ADMIN")
                 .build();
-        System.out.println(userDetails);
         return new InMemoryUserDetailsManager(userDetails);
     }
 

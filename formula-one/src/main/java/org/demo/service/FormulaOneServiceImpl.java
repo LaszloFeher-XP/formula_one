@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.demo.error.InvalidTeamException;
 import org.demo.error.TeamNotFoundException;
+import org.demo.model.DeleteResponse;
 import org.demo.model.FormulaOneItem;
 import org.demo.persistence.entity.FormulaOneItemEntity;
 import org.demo.persistence.repository.FormulaOneRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +18,16 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FormulaOneServiceImpl implements FormulaOneService {
+class FormulaOneServiceImpl implements FormulaOneService {
 
     FormulaOneRepository repository;
+
+    MapperService mapperService;
 
     @Override
     public List<FormulaOneItem> getTeams() {
         return repository.findAll()
-                .stream().map(this::buildFormulaOneItem)
+                .stream().map(mapperService::toDomain)
                 .collect(Collectors.toList());
     }
 
@@ -34,53 +36,38 @@ public class FormulaOneServiceImpl implements FormulaOneService {
         if (formulaOneItem.getId() == null) {
             formulaOneItem.setId((UUID.randomUUID()));
         }
-        if (teamExisting(formulaOneItem)) {
+        if (repository.existsByNameIgnoreCaseIn(formulaOneItem.getName()).orElse(false)) {
             throw new InvalidTeamException("The Team is in the list");
         }
-        repository.save(mapToFormulaOneItemEntity(formulaOneItem));
+        repository.save(mapperService.toEntity(formulaOneItem));
         return formulaOneItem;
     }
 
     @Override
     public FormulaOneItem updateTeam(FormulaOneItem formulaOneItem) {
-        if (!repository.existsById(formulaOneItem.getId())) {
-            throw new TeamNotFoundException(String.format("Team cannot be found with this ID: %s", formulaOneItem.getId()));
+        this.notExistsById(String.valueOf(formulaOneItem.getId()));
+        if (teamDoesNotMatch(formulaOneItem)) {
+            throw new InvalidTeamException("The Team is in the list");
         }
-        FormulaOneItemEntity formulaOneItemEntity = repository.getReferenceById(formulaOneItem.getId());
-        formulaOneItemEntity.setName(formulaOneItem.getName());
-        formulaOneItemEntity.setFoundationYear(formulaOneItem.getFoundationYear());
-        formulaOneItemEntity.setChampionships(formulaOneItem.getChampionships());
-        formulaOneItemEntity.setEntryFeeStatus(formulaOneItem.getEntryFeeStatus());
-        repository.save(formulaOneItemEntity);
+        repository.save(mapperService.toEntity(formulaOneItem));
         return formulaOneItem;
     }
 
     @Override
-    public void deleteTeam(String id) {
+    public DeleteResponse deleteTeam(String id) {
+        this.notExistsById(id);
         repository.deleteById(UUID.fromString(id));
+        return DeleteResponse.builder().message(String.format("Team deleted with ID: %s", id)).build();
     }
 
-    private FormulaOneItemEntity mapToFormulaOneItemEntity(FormulaOneItem formulaOneItem) {
-        FormulaOneItemEntity formulaOneItemEntity = new FormulaOneItemEntity();
-        BeanUtils.copyProperties(formulaOneItem, formulaOneItemEntity);
-        return formulaOneItemEntity;
+    private void notExistsById(String id) {
+        if (!repository.existsById(UUID.fromString(id))) {
+            throw new TeamNotFoundException(String.format("Team cannot be found with this ID: %s", id));
+        }
     }
 
-    private boolean teamExisting(FormulaOneItem formulaOneItem) {
-        List<FormulaOneItem> formulaOneItems = (repository.findAll()
-                .stream().map(this::buildFormulaOneItem)
-                .toList());
-        return formulaOneItems.stream().anyMatch(item -> item.equals(formulaOneItem));
+    private boolean teamDoesNotMatch(FormulaOneItem formulaOneItem) {
+        List<FormulaOneItemEntity> formulaOneItems = repository.findByNameIgnoreCaseIn(formulaOneItem.getName()).orElse(List.of());
+        return formulaOneItems.stream().anyMatch(item -> !item.getId().equals(formulaOneItem.getId()));
     }
-
-    private FormulaOneItem buildFormulaOneItem(FormulaOneItemEntity entity) {
-        return FormulaOneItem.builder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .foundationYear(entity.getFoundationYear())
-                .championships(entity.getChampionships())
-                .entryFeeStatus(entity.getEntryFeeStatus())
-                .build();
-    }
-
 }

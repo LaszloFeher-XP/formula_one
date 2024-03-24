@@ -17,4 +17,6 @@ public class AuthController {
     AuthenticationResponse baseauth() {
         return new AuthenticationResponse("User is authenticated.");
     }
+
+
 }

@@ -1,5 +1,6 @@
 package org.demo.service;
 
+import org.demo.model.DeleteResponse;
 import org.demo.model.FormulaOneItem;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface FormulaOneService {
 
     FormulaOneItem updateTeam(FormulaOneItem formulaOneItem);
 
-    void deleteTeam(String id);
+    DeleteResponse deleteTeam(String id);
 }

@@ -37,7 +37,6 @@ public class FormulaOneController {
 
     @DeleteMapping("/team/{id}")
     public ResponseEntity<DeleteResponse> deleteTeam(@PathVariable("id") String id) {
-        formulaOneService.deleteTeam(id);
-        return ResponseEntity.ok(DeleteResponse.builder().message(String.format("Team deleted with id: %s", id)).build());
+        return ResponseEntity.ok(formulaOneService.deleteTeam(id));
     }
 }

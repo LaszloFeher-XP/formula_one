@@ -1,18 +1,14 @@
 server:
-  port: 8082
+  port: 8080
 
 spring:
   jpa:
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       generate-ddl: true
   h2:
     console:
       enabled: true
-  datasource:
-    platform: h2
-    url: jdbc:h2:~/test
-    driverClassName: org.h2.Driver
-    initialize: true
+
