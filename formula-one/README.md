@@ -20,7 +20,7 @@ So running the F1APP requires downloaded Gradle and JDK.
 
 For maintaining, building, running the application, running the tests please use proper IDE (IntelliJ IDEA, Eclipse, VSCode).
 
-To run the F1APP from IDE, run the <code>org.demo.FormulaOneApplication</code>
+After downloading the dependencies, to run the F1APP from IDE, run the <code>org.demo.FormulaOneApplication</code>
 
 To build project the project manually use <code>$ ./gradlew build</code>
 
