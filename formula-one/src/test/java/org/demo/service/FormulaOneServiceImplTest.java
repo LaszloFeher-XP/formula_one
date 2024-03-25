@@ -1,13 +1,13 @@
 package org.demo.service;
 
+import org.apache.coyote.BadRequestException;
 import org.demo.error.InvalidTeamException;
-import org.demo.error.TeamNotFoundException;
+import org.demo.error.InvalidRequestException;
 import org.demo.model.DeleteResponse;
 import org.demo.model.EntryFeeStatus;
 import org.demo.model.FormulaOneItem;
 import org.demo.persistence.entity.FormulaOneItemEntity;
 import org.demo.persistence.repository.FormulaOneRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +33,9 @@ public class FormulaOneServiceImplTest {
     @Mock
     private MapperService mapperService;
 
+    @Mock
+    private ValidationService validationService;
+
     String id;
 
     FormulaOneItem formulaOneItem;
@@ -40,7 +43,7 @@ public class FormulaOneServiceImplTest {
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
-        formulaOneService = new FormulaOneServiceImpl(repository, mapperService);
+        formulaOneService = new FormulaOneServiceImpl(repository, mapperService, validationService);
         id = "e2af100b-6f3c-4dba-8f65-322ab5c35dea";
         formulaOneItem = FormulaOneItem.builder()
                 .id(UUID.fromString(id))
@@ -73,10 +76,12 @@ public class FormulaOneServiceImplTest {
     }
 
     @Test
-    public void addTeam_shouldCallRepository() {
+    public void addTeam_shouldCallRepository() throws BadRequestException {
         // given
         Mockito.when(repository.existsByNameIgnoreCaseIn("Ferrari"))
                 .thenReturn(Optional.of(false));
+        Mockito.when(validationService.foundationYearIsValid(formulaOneItem))
+                .thenReturn(true);
         // when
         FormulaOneItem result = formulaOneService.addTeam(formulaOneItem);
         // then
@@ -105,6 +110,8 @@ public class FormulaOneServiceImplTest {
         // given
         Mockito.when(repository.existsById(UUID.fromString(id)))
                 .thenReturn(true);
+        Mockito.when(validationService.foundationYearIsValid(formulaOneItem))
+                .thenReturn(true);
         // when
         FormulaOneItem result = formulaOneService.updateTeam(formulaOneItem);
         // then
@@ -121,7 +128,7 @@ public class FormulaOneServiceImplTest {
         Mockito.when(repository.existsById(UUID.fromString(id)))
                 .thenReturn(false);
         // when
-        Exception exception = assertThrows(TeamNotFoundException.class, () -> {
+        Exception exception = assertThrows(InvalidRequestException.class, () -> {
             formulaOneService.updateTeam(formulaOneItem);
         });
         // then
@@ -167,7 +174,7 @@ public class FormulaOneServiceImplTest {
         Mockito.when(repository.existsById(UUID.fromString(id)))
                 .thenReturn(false);
         // when
-        Exception exception = assertThrows(TeamNotFoundException.class, () -> {
+        Exception exception = assertThrows(InvalidRequestException.class, () -> {
             formulaOneService.deleteTeam(id);
         });
         // then

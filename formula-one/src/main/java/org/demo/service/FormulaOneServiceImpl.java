@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.demo.error.InvalidTeamException;
-import org.demo.error.TeamNotFoundException;
+import org.demo.error.InvalidRequestException;
 import org.demo.model.DeleteResponse;
 import org.demo.model.FormulaOneItem;
 import org.demo.persistence.entity.FormulaOneItemEntity;
@@ -24,6 +24,8 @@ class FormulaOneServiceImpl implements FormulaOneService {
 
     MapperService mapperService;
 
+    ValidationService validationService;
+
     @Override
     public List<FormulaOneItem> getTeams() {
         return repository.findAll()
@@ -32,13 +34,14 @@ class FormulaOneServiceImpl implements FormulaOneService {
     }
 
     @Override
-    public FormulaOneItem addTeam(FormulaOneItem formulaOneItem) {
+    public FormulaOneItem addTeam(FormulaOneItem formulaOneItem)  {
         if (formulaOneItem.getId() == null) {
             formulaOneItem.setId((UUID.randomUUID()));
         }
         if (repository.existsByNameIgnoreCaseIn(formulaOneItem.getName()).orElse(false)) {
             throw new InvalidTeamException("The Team is in the list");
         }
+        formulaItemIsValid(formulaOneItem);
         repository.save(mapperService.toEntity(formulaOneItem));
         return formulaOneItem;
     }
@@ -49,6 +52,7 @@ class FormulaOneServiceImpl implements FormulaOneService {
         if (teamDoesNotMatch(formulaOneItem)) {
             throw new InvalidTeamException("The Team is in the list");
         }
+        formulaItemIsValid(formulaOneItem);
         repository.save(mapperService.toEntity(formulaOneItem));
         return formulaOneItem;
     }
@@ -62,12 +66,18 @@ class FormulaOneServiceImpl implements FormulaOneService {
 
     private void notExistsById(String id) {
         if (!repository.existsById(UUID.fromString(id))) {
-            throw new TeamNotFoundException(String.format("Team cannot be found with this ID: %s", id));
+            throw new InvalidRequestException(String.format("Team cannot be found with this ID: %s", id));
         }
     }
 
     private boolean teamDoesNotMatch(FormulaOneItem formulaOneItem) {
         List<FormulaOneItemEntity> formulaOneItems = repository.findByNameIgnoreCaseIn(formulaOneItem.getName()).orElse(List.of());
         return formulaOneItems.stream().anyMatch(item -> !item.getId().equals(formulaOneItem.getId()));
+    }
+
+    private void formulaItemIsValid(FormulaOneItem formulaOneItem) {
+        if(!validationService.foundationYearIsValid(formulaOneItem)){
+            throw new InvalidRequestException("Inappropriate Date format.");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.demo.persistence.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,16 +20,24 @@ public class FormulaOneItemEntity {
     UUID id = UUID.randomUUID();
 
     @Column
+    @NotNull
+    @NotEmpty
     String name;
 
     @Column
+    @NotNull
+    @NotEmpty
     String foundationYear;
 
     @Column
+    @NotNull
+    @Min(0)
+    @Max(100)
     Integer championships;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     EntryFeeStatus entryFeeStatus;
 
     public FormulaOneItemEntity apply(FormulaOneItemEntity formulaOneItemEntity) {

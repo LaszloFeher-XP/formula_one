@@ -6,6 +6,7 @@ import org.demo.model.FormulaOneItem;
 import org.demo.persistence.entity.FormulaOneItemEntity;
 import org.demo.persistence.repository.FormulaOneRepository;
 import org.demo.service.MapperService;
+import org.demo.service.ValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -48,6 +49,9 @@ public class FormulaOneControllerTest {
 
     @MockBean
     MapperService mapperService;
+
+    @MockBean
+    ValidationService validationService;
 
     @BeforeEach
     void setup() {
@@ -102,15 +106,17 @@ public class FormulaOneControllerTest {
     void whenCallingAddTeam_thenShouldReturnAddedTeamData() throws Exception {
         // given
         String path = "/api/f1/team";
+        String id = "05431da2-1df6-4812-b7e8-d4625710c87a";
         FormulaOneItem formulaOneItem = FormulaOneItem
                 .builder()
-                .id(null)
+                .id(UUID.fromString(id))
                 .name("Ferrari")
                 .foundationYear("1950")
                 .championships(16)
                 .entryFeeStatus(EntryFeeStatus.PAID)
                 .build();
         // when
+        when(validationService.foundationYearIsValid(formulaOneItem)).thenReturn(true);
         ResultActions request = mockMvc.perform(Objects.requireNonNull(post(path)
                         .content(asJsonString(formulaOneItem))
                         .contentType(MediaType.APPLICATION_JSON)))
@@ -140,7 +146,7 @@ public class FormulaOneControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)))
                 .andDo(print());
         //then
-        request.andExpect(status().isInternalServerError())
+        request.andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message")
                         .value(String.format("Team cannot be found with this ID: %s", id)));
@@ -164,6 +170,7 @@ public class FormulaOneControllerTest {
 
         Mockito.when(repository.existsById(UUID.fromString(id))).thenReturn(true);
         Mockito.when(repository.getReferenceById(UUID.fromString(id))).thenReturn(formulaOneItemEntity);
+        Mockito.when(validationService.foundationYearIsValid(updateItem)).thenReturn(true);
         // when
         ResultActions request = mockMvc.perform(put(path)
                         .content(asJsonString(updateItem))
@@ -184,7 +191,7 @@ public class FormulaOneControllerTest {
         ResultActions request = mockMvc.perform(Objects.requireNonNull(delete(path)))
                 .andDo(print());
         //then
-        request.andExpect(status().isInternalServerError())
+        request.andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message")
                         .value(String.format("Team cannot be found with this ID: %s", id)));
