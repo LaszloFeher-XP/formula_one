@@ -26,7 +26,7 @@ export class AppComponent {
     private authenticationService: AuthenticationService,
     private router: Router
   ) { }
-  
+
   toLogin(): void {
     if (this.isUserLoggedIn()) {
       this.logout();
@@ -48,3 +48,4 @@ export class AppComponent {
     return this.isUserLoggedIn() ? 'Logout' : 'Login';
   }
 }
+

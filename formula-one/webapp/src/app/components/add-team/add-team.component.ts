@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ErrorModel } from '../../models/error-model';
 import { MessageService } from 'primeng/api';
 import { Store } from '@ngrx/store';
+import { MessageModule } from 'primeng/message';
 import { removeFormulaOneItem } from '../../store/formula-one-actions';
 
 @Component({
@@ -34,6 +35,7 @@ import { removeFormulaOneItem } from '../../store/formula-one-actions';
     InputNumberModule,
     InputTextModule,
     InputSwitchModule, 
+    MessageModule,
     TableModule,
     ToastModule
   ],
@@ -56,6 +58,7 @@ export class AddTeamComponent implements  OnDestroy{
   formGroup: FormGroup;
   storeItem = this.store.select('formulaOneItem');
   editMode: boolean = false;
+  isSaving: boolean = false;
   id: string =  '';
 
   constructor(
@@ -116,6 +119,7 @@ export class AddTeamComponent implements  OnDestroy{
   }
 
   doSave(item: FormulaOneItem): void {
+    this.isSaving = true;
     this.formulaOneService.addTeam(item)
     .pipe(takeUntil(this.destroy))
       .subscribe({        
@@ -144,12 +148,22 @@ export class AddTeamComponent implements  OnDestroy{
       });
   }
 
+  get headerLabel(): string{
+    return this.editMode ? 'Update' : 'Add New';
+  }
+
   get saveLabel(): string{
     return this.editMode ? 'Update' : 'Save';
   }
 
   get buttonDisabled(): boolean{
-    return this.editMode ? this.formGroup.pristine : !this.formGroup.valid;
+    return this.editMode
+      ? (this.formGroup.pristine || !this.formGroup.valid || this.isSaving)
+      : (!this.formGroup.valid || this.isSaving);
+  }
+
+  nameHasError(): boolean{
+    return this.formGroup.controls['name'].dirty && this.formGroup.controls['name'].hasError('required');
   }
 
   ngOnDestroy(): void {
@@ -158,8 +172,9 @@ export class AddTeamComponent implements  OnDestroy{
   }
   
   private showError(err: ErrorModel): void{
+    this.isSaving = false;
     if (err?.status && err.status == 401) {
-      this.messageService.add({ severity: 'error', summary: 'Session has expired', detail: `Please logout and login again.` });
+      this.messageService.add({ severity: 'error', summary: 'Login has expired', detail: `Please logout and login again.` });
       return;
     }
     this.messageService.add({
@@ -171,7 +186,7 @@ export class AddTeamComponent implements  OnDestroy{
 
   private checkAdded(value: FormulaOneItem): void{
     if (value && value.id) {
-      this.messageService.add({ severity: 'success', summary: 'Update successful', detail: `${value.name} has been created.` });
+      this.messageService.add({ severity: 'success', summary: 'Successful creation', detail: `${value.name} has been created.` });
     }
   }
 
@@ -183,6 +198,7 @@ export class AddTeamComponent implements  OnDestroy{
 
   private finalize(): void{
     setTimeout(() => {      
+      this.isSaving = false;
       this.formGroup.reset();
       this.store.dispatch(removeFormulaOneItem());
       this.router.navigateByUrl('/');

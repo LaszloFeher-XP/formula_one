@@ -5,7 +5,9 @@ import { FormulaOneItem } from '../../models/formula-one-item';
 import { EntryFeeStatus } from '../../models/entry-fee-status';
 
 import { ButtonModule } from 'primeng/button';
+import { MessagesModule } from 'primeng/messages';
 import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { FormulaOneService } from '../../services/formula-one.service';
@@ -17,7 +19,6 @@ import { addFormulaOneItem } from '../../store/formula-one-actions';
 import { AuthenticationService } from '../../services/authentication.service';
 import { ErrorModel } from '../../models/error-model';
 import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-main',
@@ -26,6 +27,7 @@ import { ToastModule } from 'primeng/toast';
     CommonModule,
 
     ButtonModule,
+    MessagesModule,
     TableModule,
     ToastModule,
     TooltipModule
@@ -91,7 +93,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private showError(err: ErrorModel): void{
     if (err?.status && err.status == 401) {
-      this.messageService.add({ severity: 'error', summary: 'Session has expired', detail: `Please logout and login again.` });
+      this.messageService.add({ severity: 'error', summary: 'Login has expired', detail: `Please logout and login again.` });
       return;
     }
     this.messageService.add({

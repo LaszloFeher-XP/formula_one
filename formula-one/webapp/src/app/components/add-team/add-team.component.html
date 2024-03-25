@@ -5,10 +5,10 @@
 <div class="content">
 
 
-  <p-card header="Add New Team" [style]="{ width: '45rem'}">
+  <p-card header="{{headerLabel}} Team" [style]="{ width: '45rem'}">
     
     <ng-template pTemplate="header">
-        <img alt="Card" src="https://primefaces.org/cdn/primeng/images/usercard.png" />
+        <img alt="Card" src="https://images.pexels.com/photos/13641535/pexels-photo-13641535.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
     </ng-template>
   
 
@@ -17,19 +17,20 @@
         <div class="input-field">
             <div>Name</div>
             <div>
-                <input type="text" pInputText formControlName="name"/>
+                <input type="text" pInputText formControlName="name" aria-describedby="name-help"/>
+                @if(nameHasError()){<p-message severity="error" ></p-message>}
             </div>
         </div>
         <div class="input-field">
             <div>Foundation Year</div>
             <div>
-                <p-inputNumber formControlName="foundationYear" [showButtons]="true" inputId="minmax-buttons" [min]="START_YEAR" [max]="END_YEAR"> </p-inputNumber>
+                <p-inputNumber formControlName="foundationYear" [showButtons]="true" [useGrouping]="false" inputId="minmax-buttons" [min]="START_YEAR" [max]="END_YEAR"> </p-inputNumber>
             </div>
         </div>
         <div class="input-field">
             <div>Number of Championships</div>
             <div>
-                <p-inputNumber formControlName="championships" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100"> </p-inputNumber>
+                <p-inputNumber formControlName="championships" [showButtons]="true"  inputId="minmax-buttons" [min]="0" [max]="100"> </p-inputNumber>
             </div>
         </div>
         <div class="input-field">
