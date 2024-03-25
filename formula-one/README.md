@@ -16,9 +16,6 @@ Championships** and if **Entry Fee Paid**.
 Made with using Spring Boot 3.2.2, with Gradle (jdk: Amazon Corretto v17) in IntelliJ IDEA CE.
 
 ### Setup
-
-The project can be found in the <code>formula_one</code> folder.
-
 So running the F1APP requires downloaded Gradle and JDK.
 
 For maintaining, building, running the application, running the tests please use proper IDE (IntelliJ IDEA, Eclipse, VSCode).
@@ -70,7 +67,7 @@ username: <code>admin</code>, password: <code>f1test2018</code>
 Created with using Angular v17.2.0 (with **RxJS**, **NgRX** store functions and **PrimeNG** UI component)
 
 ### Setup
-The project can be found in the <code>formula_one/webapp</code> folder.
+The project can be found in the <code>webapp</code> folder.
 
 To run the frontend, you need installed node.js first.
 
