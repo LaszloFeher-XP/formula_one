@@ -3,14 +3,14 @@ package org.demo.model;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.UUID;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FormulaOneItem {
 
     @EqualsAndHashCode.Include
@@ -19,5 +19,4 @@ public class FormulaOneItem {
     String foundationYear;
     Integer championships;
     EntryFeeStatus entryFeeStatus;
-
 }

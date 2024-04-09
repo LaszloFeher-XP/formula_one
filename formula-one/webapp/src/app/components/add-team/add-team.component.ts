@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { FormulaOneService } from '../../services/formula-one.service';
 import { FormulaOneItem } from '../../models/formula-one-item';
 import { EntryFeeStatus } from '../../models/entry-fee-status';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, timer } from 'rxjs';
 import { ErrorModel } from '../../models/error-model';
 import { MessageService } from 'primeng/api';
 import { Store } from '@ngrx/store';
@@ -197,11 +197,13 @@ export class AddTeamComponent implements  OnDestroy{
   }
 
   private finalize(): void{
-    setTimeout(() => {      
-      this.isSaving = false;
-      this.formGroup.reset();
-      this.store.dispatch(removeFormulaOneItem());
-      this.router.navigateByUrl('/');
-    }, 1000);   
+    timer(1000).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.formGroup.reset();
+        this.store.dispatch(removeFormulaOneItem());
+        this.router.navigateByUrl('/');
+      },      
+    })    
   }
 }
