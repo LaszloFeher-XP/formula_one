@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { MainComponent } from './components/main/main.component';
 
 import { ButtonModule } from 'primeng/button';
 import { AuthenticationService } from './services/authentication.service';
@@ -8,24 +7,17 @@ import { AuthenticationService } from './services/authentication.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    MainComponent,
-    RouterOutlet,
-
-    ButtonModule
-  ],
+  imports: [RouterOutlet, ButtonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
-    
-  
-export class AppComponent {  
-  title = "webapp";
+export class AppComponent {
+  title = 'webapp';
 
   constructor(
     private authenticationService: AuthenticationService,
     private router: Router
-  ) { }
+  ) {}
 
   toLogin(): void {
     if (this.isUserLoggedIn()) {
@@ -35,7 +27,7 @@ export class AppComponent {
     this.router.navigateByUrl('/login');
   }
 
-  isUserLoggedIn(): boolean{
+  isUserLoggedIn(): boolean {
     return this.authenticationService.isUserLoggedIn();
   }
 
@@ -44,8 +36,7 @@ export class AppComponent {
     this.router.navigateByUrl('/');
   }
 
-  get loginLabel(): string{
+  get loginLabel(): string {
     return this.isUserLoggedIn() ? 'Logout' : 'Login';
   }
 }
-

@@ -4,33 +4,35 @@ import { Observable, map } from 'rxjs';
 import { User } from '../models/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthenticationService {
-
   USER_NAME_SESSION = 'authenticatedUser';
   private readonly API: string = 'http://localhost:8080/api/auth';
   private _user: User = new User();
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient) {}
 
-  authenticationService(username: string, password: string): Observable<void>  {
-    const basicAuthHeaderString = this.createBasicAuthHeader(username, password);
+  authenticationService(username: string, password: string): Observable<void> {
+    const basicAuthHeaderString = this.createBasicAuthHeader(
+      username,
+      password
+    );
     const headers = new HttpHeaders({
-      Authorization: basicAuthHeaderString
-    })
-    return this.http.get(this.API, { headers })
-      .pipe(map(() => {
+      Authorization: basicAuthHeaderString,
+    });
+    return this.http.get(this.API, { headers }).pipe(
+      map(() => {
         this._user.username = username;
         this._user.password = password;
         this.registerSuccessfulLogin(username);
-      }));    
+      })
+    );
   }
 
   createBasicAuthHeader(username: string, password: string): string {
-    const basicAuthHeaderString = 'Basic ' + window.btoa(`${username}:${password}`);
+    const basicAuthHeaderString =
+      'Basic ' + window.btoa(`${username}:${password}`);
     return basicAuthHeaderString;
   }
 
@@ -52,11 +54,15 @@ export class AuthenticationService {
     return true;
   }
 
-  get user(): User{
-    return this._user
+  get user(): User {
+    return this._user;
   }
 
-  get hasUserData(): boolean {    
-    return this._user && this.user.username !==undefined && this.user.password !==undefined;
+  get hasUserData(): boolean {
+    return (
+      this._user &&
+      this.user.username !== undefined &&
+      this.user.password !== undefined
+    );
   }
 }

@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from "@angular/common";
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { FormulaOneItem } from '../../models/formula-one-item';
 import { EntryFeeStatus } from '../../models/entry-fee-status';
@@ -14,7 +14,7 @@ import { FormulaOneService } from '../../services/formula-one.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { Store  } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { addFormulaOneItem } from '../../store/formula-one-actions';
 import { AuthenticationService } from '../../services/authentication.service';
 import { ErrorModel } from '../../models/error-model';
@@ -30,47 +30,50 @@ import { MessageService } from 'primeng/api';
     MessagesModule,
     TableModule,
     ToastModule,
-    TooltipModule
+    TooltipModule,
   ],
   templateUrl: './main.component.html',
-  styleUrl: './main.component.scss'
+  styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit, OnDestroy {
+  private authenticationService = inject(AuthenticationService);
+  private formulaOneService = inject(FormulaOneService);
+  private messageService = inject(MessageService);
+
+  private store = inject(Store);
+  private router = inject(Router);
+
   private destroy = new Subject<void>();
 
-  teams: FormulaOneItem[] = []
-
-  constructor(
-    private authenticationService: AuthenticationService,
-    private formulaOneService: FormulaOneService,
-    private messageService : MessageService,
-    private store: Store,
-    private router: Router
-  ) {}
+  teams: FormulaOneItem[] = [];
 
   ngOnInit(): void {
     this.getTeams();
   }
 
   getTeams(): void {
-    this.formulaOneService.getTeams().pipe(takeUntil(this.destroy)).subscribe(value => this.teams = value);
+    this.formulaOneService
+      .getTeams()
+      .pipe(takeUntil(this.destroy))
+      .subscribe(value => (this.teams = value));
   }
 
-  isPaid(item: FormulaOneItem): boolean{
+  isPaid(item: FormulaOneItem): boolean {
     return item.entryFeeStatus === EntryFeeStatus.PAID;
   }
 
-  create(): void{
+  create(): void {
     this.router.navigateByUrl('add-new-team');
   }
 
-  updateTeam(item: FormulaOneItem): void{
+  updateTeam(item: FormulaOneItem): void {
     this.store.dispatch(addFormulaOneItem(item));
     this.router.navigateByUrl('update-team');
   }
 
   deleteTeam(item: FormulaOneItem): void {
-    this.formulaOneService.deleteTeam(item.id!)
+    this.formulaOneService
+      .deleteTeam(item.id!)
       .pipe(takeUntil(this.destroy))
       .subscribe({
         next: () => {
@@ -78,11 +81,11 @@ export class MainComponent implements OnInit, OnDestroy {
         },
         error: (err: ErrorModel) => {
           this.showError(err);
-        }
+        },
       });
   }
 
-  isUserLoggedIn(): boolean{
+  isUserLoggedIn(): boolean {
     return this.authenticationService.isUserLoggedIn();
   }
 
@@ -91,15 +94,19 @@ export class MainComponent implements OnInit, OnDestroy {
     this.destroy.complete();
   }
 
-  private showError(err: ErrorModel): void{
+  private showError(err: ErrorModel): void {
     if (err?.status && err.status == 401) {
-      this.messageService.add({ severity: 'error', summary: 'Login has expired', detail: `Please logout and login again.` });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Login has expired',
+        detail: `Please logout and login again.`,
+      });
       return;
     }
     this.messageService.add({
       severity: 'error',
       summary: 'Delete was unsuccessful',
-      detail: err.error?.message ? err.error.message : err.message
+      detail: err.error?.message ? err.error.message : err.message,
     });
   }
 }
