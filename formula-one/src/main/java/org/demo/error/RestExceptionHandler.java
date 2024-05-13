@@ -10,14 +10,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidTeamException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage employeeNotFoundHandler(InvalidTeamException exception) {
+    public ErrorMessage invalidTeamExceptionHandler(InvalidTeamException exception) {
         return new ErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
     };
 
     @ExceptionHandler(InvalidRequestException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage employeeNotFoundHandler(InvalidRequestException exception) {
+    public ErrorMessage invalidRequestExceptionHandler(InvalidRequestException exception) {
         return new ErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
     };
 
